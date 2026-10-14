@@ -13,7 +13,7 @@ import type { Measurement } from '@/types';
  * view rather than baking once.
  *
  * Everything lives in one wide-line batch. Plain GL lines are locked to a single
- * device pixel, which on a retina panel is half a CSS pixel of amber over a
+ * device pixel, which on a retina panel is half a CSS pixel of colour over a
  * shaded model — too faint to trust a number to. LineSegments2 draws real
  * screen-space width instead, at the cost of having to be told the drawing
  * buffer size whenever the canvas resizes.
@@ -37,7 +37,7 @@ export class Annotations {
   private positions: number[] = [];
   private colours: number[] = [];
 
-  private mark = new THREE.Color(0xffb224);
+  private mark = new THREE.Color(0xff7a1a);
   /** Model radius in world units — every tick and ring is sized off this. */
   private scaleHint = 1;
 
@@ -134,6 +134,34 @@ export class Annotations {
     this.push(centre.clone().sub(u), centre.clone().add(u), tone);
   }
 
+  /**
+   * Two arms out from the vertex and an arc between them, sized off the
+   * shorter arm so a sharp corner on a small feature does not get an arc
+   * larger than the feature itself.
+   */
+  private angle(a: THREE.Vector3, vertex: THREE.Vector3, b: THREE.Vector3, tone: number) {
+    this.push(vertex, a, tone);
+    this.push(vertex, b, tone);
+    this.cross(vertex, this.scaleHint * 0.018, tone);
+
+    const u = a.clone().sub(vertex);
+    const v = b.clone().sub(vertex);
+    const reach = Math.min(u.length(), v.length()) * 0.35;
+    const normal = u.clone().cross(v);
+    const sweep = u.angleTo(v);
+    if (reach <= 0 || normal.lengthSq() < 1e-18 || sweep < 1e-4) return;
+    normal.normalize();
+    const start = u.normalize().multiplyScalar(reach);
+
+    const steps = Math.max(6, Math.round((sweep / Math.PI) * 36));
+    let previous = vertex.clone().add(start);
+    for (let i = 1; i <= steps; i++) {
+      const point = vertex.clone().add(start.clone().applyAxisAngle(normal, (sweep * i) / steps));
+      this.push(previous, point, tone);
+      previous = point;
+    }
+  }
+
   /** The floating marker that tracks whatever feature the cursor has snapped to. */
   private cursor(snap: Snap, camera: THREE.Camera) {
     const size = this.scaleHint * (snap.kind === 'surface' ? 0.022 : 0.036);
@@ -198,6 +226,10 @@ export class Annotations {
           .normalize();
         this.ring(circle.centre, circle.radius, normal, TONE.solid);
         this.cross(circle.centre, this.scaleHint * 0.018, TONE.solid);
+        continue;
+      }
+      if (measurement.tool === 'angle' && points.length === 3) {
+        this.angle(points[0], points[1], points[2], TONE.solid);
       }
     }
 

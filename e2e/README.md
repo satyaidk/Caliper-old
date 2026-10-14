@@ -30,7 +30,7 @@ npm run build
 node e2e/serve-production.mjs . 5188
 
 # open every fixture and assert it renders
-node e2e/formats.mjs http://localhost:5188/
+node e2e/formats.mjs http://localhost:5188/app/
 ```
 
 Expected output is `19/19 formats rendered`. A format that fails prints the

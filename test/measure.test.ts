@@ -1,7 +1,7 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import { circleThrough, snapToFeature, tickDirection } from '../src/viewer/measure.ts';
+import { angleAt, circleThrough, snapToFeature, tickDirection } from '../src/viewer/measure.ts';
 
 /* The measuring maths is the one place in this app where a silent wrong answer
    is worse than a crash — a dimension that is confidently off by 2 mm is a
@@ -179,5 +179,29 @@ describe('snapToFeature', () => {
 
     const snap = snapToFeature(hit, camera, { x: 10, y: 10 }, 800, 800);
     assert.equal(snap.kind, 'surface');
+  });
+});
+
+describe('angleAt', () => {
+  const o = new THREE.Vector3(0, 0, 0);
+
+  test('reads a right angle', () => {
+    near(must(angleAt(new THREE.Vector3(1, 0, 0), o, new THREE.Vector3(0, 5, 0)), 'an angle'), 90);
+  });
+
+  test('reads a straight line as 180 and a fold-back as 0', () => {
+    near(must(angleAt(new THREE.Vector3(1, 0, 0), o, new THREE.Vector3(-3, 0, 0)), 'an angle'), 180);
+    near(must(angleAt(new THREE.Vector3(1, 0, 0), o, new THREE.Vector3(4, 0, 0)), 'an angle'), 0);
+  });
+
+  test('reads a 45° chamfer away from the origin', () => {
+    const vertex = new THREE.Vector3(10, 10, 10);
+    const a = vertex.clone().add(new THREE.Vector3(2, 0, 0));
+    const b = vertex.clone().add(new THREE.Vector3(3, 3, 0));
+    near(must(angleAt(a, vertex, b), 'an angle'), 45);
+  });
+
+  test('returns null when an arm has no length', () => {
+    assert.equal(angleAt(o.clone(), o, new THREE.Vector3(1, 0, 0)), null);
   });
 });

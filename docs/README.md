@@ -1,5 +1,18 @@
 # Documentation
 
+| Document | What it is |
+| --- | --- |
+| [design.md](design.md) | How Caliper 2.0 is built and why: pages, layers, scene graph, rendering, analysis, caching, security |
+| [learning-path.md](learning-path.md) | A beginner's route through the code, in reading order, with an exercise per stop |
+| [adr/](adr/) | Architecture decision records |
+| [images/](images/) | Screenshots used by the README |
+
+## The technical manual
+
+The manual below was written for 1.0. Its chapters on the loaders, the measuring
+maths, the build, CI and the security headers still hold. The interface chapters
+describe the 1.0 layout; for 2.0's, read design.md.
+
 **[Caliper-Technical-Documentation.pdf](Caliper-Technical-Documentation.pdf)** —
 84 pages covering the whole application, from `index.html` to the deployed site.
 

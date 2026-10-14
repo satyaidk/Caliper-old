@@ -1,0 +1,48 @@
+name: Bug report
+description: Something opens wrong, measures wrong, or does not work.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems go through SECURITY.md, not here.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw instead.
+    validations:
+      required: true
+  - type: input
+    id: file
+    attributes:
+      label: The file
+      description: Its format and size. Attach it below if you can share it; if it is confidential, describe it instead.
+      placeholder: STEP, 4.2 MB, an assembly of 30 parts
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the file
+        2. Press X for the section view
+        3. ...
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and system
+      placeholder: Chrome 141 on Windows 11, installed as an app
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Caliper version
+      description: In the page source as the caliper-build meta tag.
+      placeholder: 2.0.0
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Any errors from the browser's developer tools console.
+      render: text

@@ -1,194 +1,168 @@
 /* ---------------------------------------------------------------------------
    Caliper design tokens
 
-   The shell is an instrument body: cool graphite, hairline rules, engraved
-   labels, and exactly one warm colour. That colour is amber, and it is not a
-   taste decision — it is the only hue left. A model viewer already spends red,
-   green and blue on the axis triad, and the triad is not negotiable because
-   every other tool in this world uses it. An emerald brand colour has to fight
-   axis-Y for the same wavelength and one of them loses; amber never enters the
-   argument, which is why Y is finally allowed to be an honest green here.
+   The interface follows Bambu Studio, the slicer most people opening a 3D
+   model in 2026 already have open in another window. The values below come
+   from its source (src/slic3r/GUI/Widgets/StateColor.cpp, GLCanvas3D.cpp,
+   BBLTopbar.cpp): the dark slate top bar it draws in both themes, its grey
+   surfaces, its flat canvas, and its brand green. Where one of its values fails
+   WCAG AA for text, the token keeps Bambu's hue and moves only the lightness,
+   and the comment says so.
 
-   Amber earns it on its own terms too. It is the colour a scribed line takes on
-   oiled steel — the mark a machinist leaves before cutting. That is exactly what
-   the accent means in this app: everything amber is something *you* put there.
-   The selection marker, the measuring annotations, the snap cursor, the primary
-   button. The model wears its own colours; the triad points; amber is authorship.
+   Four colour systems, each with one job:
 
-   So there are three colour systems and they never overlap:
+     green    — active: the tool you are holding, the tab you are on, the
+                primary action, the selection on stage
+     orange   — measurement: every dimension drawn on the model
+     triad    — position: X red, Y green, Z blue, the convention every 3D tool
+                uses, on the gizmo, the size rows and the per-axis splits
+     grey     — everything else
 
-     amber   — what you did:      selection, measurements, primary actions
-     triad   — where things are:  gizmo, size rows, per-axis measurement splits
-     grey    — everything else
-
-   Every pair below clears WCAG AA against the surface it sits on. The dark
-   theme's amber is bright and carries dark ink; the light theme's drops to a
-   bronze so white ink clears 4.5:1 on it. That inversion is the whole reason
-   --accent-ink exists as a token rather than a hardcoded white.
+   Green and the Y axis share a hue, as they do in Bambu Studio itself. They
+   never share a context: green marks controls, Y marks a direction.
 --------------------------------------------------------------------------- */
 
 :root {
   color-scheme: dark;
 
-  /* --- axis triad (position) --------------------------------------------- */
-  --axis-x: #ff5f56;
-  --axis-y: #57d364;
-  --axis-z: #4aa3ff;
+  /* --- top bar: Bambu's BBLTopbar, rgb(38, 46, 48) in both themes --------- */
+  --topbar: #262e30;
+  --topbar-raise: #323b3e;
+  --topbar-line: #3a4447;
+  --topbar-ink: #ffffff;
+  --topbar-ink-2: #aeb4b7;
 
-  /* --- scribe amber (authorship) ----------------------------------------- */
-  --accent: #ffb224;
-  --accent-hover: #ffc24d;
-  --accent-press: #e89a10;
-  --accent-ink: #1a1206;
-  --accent-wash: rgba(255, 178, 36, 0.14);
-  --accent-line: rgba(255, 178, 36, 0.42);
-  --accent-glow: rgba(255, 178, 36, 0.22);
+  /* --- brand green ------------------------------------------------------------
+     #00AE42 is Bambu's BrandGreen; #21A452 is what its dark mode maps it to.
+     White text on either is under 3:1, so filled buttons use a deeper green
+     that carries white at 4.6:1, and green text gets its own lighter token. */
+  --accent: #21a452;
+  --accent-text: #37b865;
+  --accent-fill: #00873a;
+  --accent-fill-hover: #007a34;
+  --accent-fill-press: #006c2e;
+  --accent-ink: #ffffff;
+  --accent-wash: #283232;
+  --accent-line: rgba(55, 184, 101, 0.55);
 
-  /* --- shell surfaces ----------------------------------------------------- */
-  --void: #101114;
-  --panel: #191b1f;
-  --raise: #232529;
-  --sunken: #141518;
+  /* --- surfaces: Bambu dark mode ------------------------------------------- */
+  --app: #242428;
+  --panel: #2d2d31;
+  --raise: #36363c;
+  --raise-2: #3e3e45;
+  --sunken: #26262a;
 
-  --rule: #2a2d33;
-  --rule-soft: #212429;
-  --rule-strong: #3a3e46;
+  --line: #3e3e45;
+  --line-strong: #4c4c55;
 
-  /* --- ink ---------------------------------------------------------------- */
-  --ink: #f0f1f3;
-  --ink-2: #c2c5cb;
-  --ink-3: #8d9199;
-  --ink-4: #6c7078;
+  /* --- canvas: GLCanvas3D's flat background, 0.329 / 0.329 / 0.353 -------- */
+  --canvas: #54545a;
+  --canvas-ink: #f2f2f3;
+  --canvas-ink-2: #c9c9cc;
+  --float: rgba(45, 45, 49, 0.94);
+  --float-line: rgba(255, 255, 255, 0.07);
 
-  /* --- status ------------------------------------------------------------- */
-  --warn: #f0a53a;
-  --danger: #ff6b70;
-  --ok: #57d364;
-  --link: #4aa3ff;
+  /* --- ink: #EFEFF0 and #B3B3B4 are Bambu's; #818183 is lifted to #a9a9ad so
+     muted text clears 4.5:1 on every surface it sits on, hover included ---- */
+  --ink: #efeff0;
+  --ink-2: #b3b3b4;
+  --ink-3: #a9a9ad;
+  --ink-4: #5a5a5f;
 
-  /* --- pipeline marks ------------------------------------------------------
-     Three categories need three hues that are neither amber nor a warning.
-     Mesh and BIM can borrow from the triad without confusion — they appear as
-     words in a table, never as a direction — but CAD gets a violet of its own,
-     because the obvious amber would say "caution" in one place and "this is
-     yours" everywhere else. */
+  /* --- status -------------------------------------------------------------- */
+  --warn: #ff8a3d;
+  --danger: #ff6e72;
+  --ok: var(--accent-text);
+  --link: #479ef5;
+
+  /* --- measurement: Bambu's COL_BAMBU_CHANGE orange ----------------------- */
+  --mark: #ff7a1a;
+
+  /* --- axis triad ---------------------------------------------------------- */
+  --axis-x: #ff5f5c;
+  --axis-y: #5bd45b;
+  --axis-z: #5c8dff;
+
+  /* --- pipelines: mesh and BIM borrow the triad, CAD takes Bambu's violet -- */
   --pipe-mesh: var(--axis-z);
-  --pipe-cad: #b18cff;
+  --pipe-cad: #af7cff;
   --pipe-bim: var(--axis-y);
 
-  /* --- viewport -----------------------------------------------------------
-     The backdrop is a CSS gradient, so it lives here. The plate and its grid
-     are three.js materials, so they live in the SKIN table in viewer/Stage.ts —
-     one owner each, rather than two copies that drift apart. The plate is kept
-     lighter than --stage-top so it stays the brightest thing in frame. */
-  --stage-top: #3c3f46;
-  --stage-bottom: #24262b;
+  /* --- type ----------------------------------------------------------------
+     Bambu Studio ships HarmonyOS Sans, which is not on a font CDN. Onest is the
+     closest neutral grotesque that is, and it carries tabular figures, so a
+     readout does not reflow while the model turns. One family throughout. */
+  --font: 'Onest', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  /* --- type ---------------------------------------------------------------
-     Archivo carries a real width axis, and this design spends it: engraved
-     labels run wide the way a maker's mark is stamped across a tool body, while
-     the display line runs narrow and tight. One family, two voices. Plex Mono
-     takes every number, because a readout that reflows while you orbit is a
-     readout nobody trusts. */
-  --font-ui: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-  --t-micro: 0.625rem; /* 10px — engraved rail labels    */
-  --t-tag: 0.6875rem; /* 11px — eyebrows, chips         */
-  --t-data: 0.75rem; /* 12px — numeric readouts        */
-  --t-body: 0.8125rem; /* 13px — controls, list rows     */
-  --t-lead: 0.9375rem; /* 15px — panel titles            */
-  --t-read: 1.0625rem; /* 17px — the measurement number  */
-  --t-title: 1.375rem; /* 22px — section headline        */
-  --t-hero: clamp(2.1rem, 6.6vw, 3.4rem);
-
-  --track-wide: 0.17em;
-  --track-mid: 0.06em;
-  --wdth-engraved: 116;
-  --wdth-display: 88;
+  --t-xs: 0.6875rem; /* 11px — key caps, units         */
+  --t-sm: 0.75rem; /* 12px — secondary rows, status  */
+  --t-md: 0.8125rem; /* 13px — controls, list rows     */
+  --t-lg: 0.9375rem; /* 15px — section titles          */
+  --t-xl: 1.25rem; /* 20px — panel headline          */
+  --t-2xl: 1.75rem; /* 28px — start page headline     */
 
   /* --- geometry ------------------------------------------------------------ */
   --r-xs: 3px;
-  --r-sm: 5px;
-  --r-md: 8px;
-  --r-lg: 12px;
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 10px;
   --r-pill: 999px;
 
-  --rail-top: 48px;
-  --rail-side: 54px;
-  --strip: 26px;
-  --panel-w: 316px;
+  --topbar-h: 44px;
+  --status-h: 26px;
+  --side-w: 312px;
 
   --ease: cubic-bezier(0.22, 0.68, 0.32, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur: 150ms;
+  --dur: 140ms;
 
-  /* Modal scrims are absolute, not derived from --void: a light shell still
-     needs to go dark behind a dialog or the dialog stops reading as modal. */
-  --scrim: rgba(8, 9, 11, 0.66);
-
-  --shadow-panel: 0 16px 40px -18px rgba(0, 0, 0, 0.75);
-  --shadow-pop: 0 26px 70px -22px rgba(0, 0, 0, 0.85);
-  --shadow-float:
-    0 2px 6px -1px rgba(0, 0, 0, 0.5), 0 10px 26px -14px rgba(0, 0, 0, 0.65);
+  --scrim: rgba(10, 10, 12, 0.6);
+  --shadow-float: 0 6px 22px -6px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-pop: 0 18px 50px -12px rgba(0, 0, 0, 0.6);
 }
 
-/* --- light theme: the surface plate ---------------------------------------
-   Not paper. A granite surface plate is a mid grey, and the instruments sit on
-   it as white chrome — which is why the shell lifts to white while the ground
-   behind it stays grey enough to read as a surface. */
+/* --- light theme: Bambu's default palette ---------------------------------- */
 :root[data-theme='light'] {
   color-scheme: light;
 
-  --axis-x: #c9342b;
-  --axis-y: #2f7d32;
-  --axis-z: #1667c4;
+  --accent: #00ae42;
+  --accent-text: #007a34;
+  --accent-wash: #edfaf2;
+  --accent-line: rgba(0, 174, 66, 0.5);
 
-  /* Amber at full brightness cannot carry white text, so the light theme runs
-     it down to bronze — the same pigment, further into the metal. */
-  --accent: #a85c00;
-  --accent-hover: #8f4d00;
-  --accent-press: #7a4200;
-  --accent-ink: #ffffff;
-  --accent-wash: rgba(168, 92, 0, 0.09);
-  --accent-line: rgba(168, 92, 0, 0.38);
-  --accent-glow: rgba(168, 92, 0, 0.16);
-
-  --void: #e6e7ea;
+  --app: #f1f1f1;
   --panel: #ffffff;
-  --raise: #f1f2f5;
-  --sunken: #f6f7f8;
+  --raise: #f8f8f8;
+  --raise-2: #eeeeee;
+  --sunken: #f4f4f4;
 
-  --rule: #e2e4e8;
-  --rule-soft: #edeef1;
-  --rule-strong: #c8ccd3;
+  --line: #e8e8e8;
+  --line-strong: #cecece;
 
-  --ink: #1b1e23;
-  --ink-2: #474c55;
-  --ink-3: #6a7079;
-  --ink-4: #8b9099;
+  --canvas: #e7e7e7;
+  --canvas-ink: #262e30;
+  --canvas-ink-2: #4c5458;
+  --float: rgba(255, 255, 255, 0.95);
+  --float-line: rgba(38, 46, 48, 0.08);
 
-  --warn: #a35a00;
-  --danger: #c62828;
-  --ok: #2f7d32;
-  --link: #1667c4;
+  /* #262E30 and #6B6B6B are Bambu's TextPrimary and TextMuted. */
+  --ink: #262e30;
+  --ink-2: #474f52;
+  --ink-3: #6b6b6b;
+  --ink-4: #a6a9aa;
 
-  --pipe-mesh: var(--axis-z);
-  --pipe-cad: #6135c4;
-  --pipe-bim: var(--axis-y);
+  --warn: #b94f00;
+  --danger: #d01b1b;
+  --link: #0068b8;
 
-  /* Kept well below the plate's own white so the plate reads as a surface the
-     model stands on rather than more of the same wall behind it. */
-  --stage-top: #e5e8ec;
-  --stage-bottom: #cbcfd6;
+  --mark: #e25e00;
 
-  --scrim: rgba(27, 30, 35, 0.4);
+  --axis-x: #cf2f2b;
+  --axis-y: #2a8a2a;
+  --axis-z: #2c5fd0;
 
-  /* A light shell is almost shadowless — a hairline does the work. */
-  --shadow-panel:
-    0 1px 2px rgba(27, 30, 35, 0.06), 0 10px 28px -14px rgba(27, 30, 35, 0.22);
-  --shadow-pop:
-    0 1px 3px rgba(27, 30, 35, 0.08), 0 22px 56px -20px rgba(27, 30, 35, 0.26);
-  --shadow-float:
-    0 1px 2px rgba(27, 30, 35, 0.07), 0 6px 18px -8px rgba(27, 30, 35, 0.18);
+  --pipe-cad: #7b45d6;
+
+  --scrim: rgba(38, 46, 48, 0.36);
+  --shadow-float: 0 4px 16px -4px rgba(38, 46, 48, 0.18), 0 1px 2px rgba(38, 46, 48, 0.08);
+  --shadow-pop: 0 18px 48px -14px rgba(38, 46, 48, 0.3);
 }

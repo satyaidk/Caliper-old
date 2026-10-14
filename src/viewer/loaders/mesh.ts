@@ -12,11 +12,12 @@ import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js';
 import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
 import { AMFLoader } from 'three/examples/jsm/loaders/AMFLoader.js';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
-import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+
 
 import { baseOf, extOf } from '@/lib/formats';
 import { CDN } from '@/lib/cdn';
 import { getActiveRenderer } from '@/viewer/renderer-registry';
+import { creasedNormals } from '@/viewer/normals';
 import type { LoadContext, LoadResult } from '@/types';
 
 /**
@@ -69,12 +70,15 @@ export async function loadMesh(file: File, ctx: LoadContext): Promise<LoadResult
   switch (ext) {
     case 'stl': {
       const geometry = new STLLoader().parse(await arrayBuffer(file));
-      // STL stores loose triangles; welding gives usable edges and smooth shading.
-      const welded = geometry.getAttribute('position').count < 600_000
-        ? mergeVertices(geometry, 1e-5)
-        : geometry;
-      welded.computeVertexNormals();
-      return { object: wrap(welded, file.name), hasAuthoredMaterials: false };
+      // STL stores loose triangles with one normal per face. Smoothing every
+      // shared corner would shade a flat face of a CAD part with dark
+      // gradients; keeping only face normals makes a scan look like a disco
+      // ball. A crease angle does both: corners sharper than 30° stay sharp,
+      // gentler ones are smoothed. Past 800,000 triangles the face normals the
+      // file came with are kept, because welding that many corners stalls.
+      const triangles = geometry.getAttribute('position').count / 3;
+      const shaded = triangles < 800_000 ? creasedNormals(geometry, Math.PI / 6) : geometry;
+      return { object: wrap(shaded, file.name), hasAuthoredMaterials: false };
     }
 
     case 'ply': {

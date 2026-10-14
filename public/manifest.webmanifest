@@ -1,23 +1,60 @@
 {
+  "id": "/app/",
   "name": "Caliper — 3D model viewer",
   "short_name": "Caliper",
-  "description": "Open and measure 3D models in the browser. Mesh, CAD and BIM formats, nothing uploaded.",
-  "start_url": ".",
-  "scope": ".",
+  "description": "Open and measure 3D models: 22 mesh, CAD and BIM file types, with Bambu Studio's tools and keys. Nothing is uploaded.",
+  "start_url": "/app/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "any",
-  "background_color": "#101114",
-  "theme_color": "#101114",
+  "background_color": "#242428",
+  "theme_color": "#262e30",
   "categories": ["productivity", "utilities", "graphics"],
   "icons": [
-    { "src": "./icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
-    { "src": "./icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" },
+    { "src": "/icon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" }
   ],
+  "screenshots": [
+    {
+      "src": "/screens/prepare.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Measuring a part in the Prepare tab"
+    },
+    {
+      "src": "/screens/preview.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Stepping through layers in the Preview tab"
+    },
+    {
+      "src": "/screens/phone.png",
+      "sizes": "780x1688",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Caliper on a phone"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open the sample gear",
+      "short_name": "Sample",
+      "url": "/app/?sample",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "launch_handler": { "client_mode": ["focus-existing", "auto"] },
   "file_handlers": [
     {
-      "action": ".",
+      "action": "/app/",
       "accept": {
         "model/stl": [".stl"],
+        "model/3mf": [".3mf"],
         "model/gltf-binary": [".glb"],
         "model/gltf+json": [".gltf"],
         "model/obj": [".obj"],
@@ -29,7 +66,6 @@
           ".fbx",
           ".dae",
           ".3ds",
-          ".3mf",
           ".amf",
           ".wrl",
           ".brep",

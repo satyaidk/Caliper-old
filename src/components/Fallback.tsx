@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
             report.
           </p>
           <pre className="fallback-detail">{error.message}</pre>
-          <button className="btn" data-variant="solid" onClick={() => window.location.reload()}>
+          <button className="btn" data-variant="primary" onClick={() => window.location.reload()}>
             Reload the page
           </button>
         </div>
@@ -66,17 +66,4 @@ export function NoWebGL() {
   );
 }
 
-/** Cheap capability probe — creates a context, then hands it straight back. */
-export function hasWebGL(): boolean {
-  try {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl');
-    if (!gl) return false;
-    // Releasing eagerly keeps the probe from holding one of the browser's
-    // limited live contexts for the rest of the session.
-    (gl.getExtension('WEBGL_lose_context') as WEBGL_lose_context | null)?.loseContext();
-    return true;
-  } catch {
-    return false;
-  }
-}
+export { hasWebGL } from '@/lib/webgl';

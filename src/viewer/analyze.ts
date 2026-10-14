@@ -52,7 +52,8 @@ export function computeStats(root: THREE.Object3D): SceneStats {
  * drew — which is the whole point of showing them.
  */
 export function computeDimensions(root: THREE.Object3D): Dimensions {
-  const box = new THREE.Box3().setFromObject(root);
+  // Precise: a rotated node's bounding box, re-boxed, is bigger than the part.
+  const box = new THREE.Box3().setFromObject(root, true);
   if (box.isEmpty()) {
     return { x: 0, y: 0, z: 0, diagonal: 0, center: [0, 0, 0] };
   }

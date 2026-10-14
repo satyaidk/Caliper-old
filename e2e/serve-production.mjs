@@ -3,8 +3,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 /**
- * Serves dist/ the way Vercel will: same headers, same SPA rewrite, read
- * straight out of vercel.json so the test cannot drift from the real config.
+ * Serves dist/ the way Vercel will: same headers, same rewrites for the app at
+ * /app/, read straight out of vercel.json so the test cannot drift from the
+ * real config.
  *
  *   node prodserver.mjs <repoRoot> <port>
  */
@@ -22,6 +23,8 @@ const TYPES = {
   '.webmanifest': 'application/manifest+json',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
+  '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml',
   '.wasm': 'application/wasm',
@@ -34,7 +37,7 @@ const server = http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split('?')[0]);
   let file = path.join(dist, url);
 
-  // Filesystem first, then the SPA rewrite — the order Vercel uses.
+  // Filesystem first, then the rewrites — the order Vercel uses.
   if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     const rewrite = config.rewrites?.find((r) => matches(r.source, url));
     file = path.join(dist, rewrite ? rewrite.destination : 'index.html');

@@ -12,7 +12,8 @@ import { fileURLToPath } from 'node:url';
  * triangle or vertex count — not merely that no exception was thrown.
  */
 
-const BASE = process.argv[2] ?? 'http://localhost:5300/';
+// The app lives at /app/; the site root is the website.
+const BASE = process.argv[2] ?? 'http://localhost:5300/app/';
 const DIR = process.argv[3]
   ? path.resolve(process.argv[3])
   : fileURLToPath(new URL('fixtures', import.meta.url));
@@ -67,7 +68,7 @@ for (const file of files) {
 
     await page.waitForFunction(
       () => {
-        const strip = document.querySelector('.strip');
+        const strip = document.querySelector('.statusbar');
         const toast = document.querySelector('.toast[data-tone="error"] .toast-title');
         return Boolean(toast) || Boolean(strip && /triangles/.test(strip.textContent ?? ''));
       },
@@ -82,7 +83,7 @@ for (const file of files) {
     if (errorToast) {
       detail = errorToast.replace(/\s+/g, ' ').slice(0, 110);
     } else {
-      const tri = await page.$eval('.strip', (n) => n.textContent ?? '');
+      const tri = await page.$eval('.statusbar', (n) => n.textContent ?? '');
       const count = Number((tri.match(/([\d,]+)\s+triangles/) ?? [0, '0'])[1].replace(/,/g, ''));
       if (count > 0) {
         status = 'PASS';

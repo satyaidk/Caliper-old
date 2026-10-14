@@ -11,7 +11,7 @@ import type { ViewPreset } from '@/types';
  * while orbiting. This projects the world axes through the live camera rotation
  * instead, so the widget is a readout first and a control second — the axis
  * pointing at you is the one you are looking down, and the triad's colours mean
- * the same thing here as they do in the dimension rows and the section picker.
+ * the same thing here as they do in the size rows and the status bar.
  */
 
 const RADIUS = 28;
@@ -33,7 +33,7 @@ const ARMS: Arm[] = [
   { preset: 'top', axis: 'y', vector: new THREE.Vector3(0, 1, 0), label: 'Y', title: 'Look from the top', positive: true },
   { preset: 'bottom', axis: 'y', vector: new THREE.Vector3(0, -1, 0), label: '', title: 'Look from below', positive: false },
   { preset: 'front', axis: 'z', vector: new THREE.Vector3(0, 0, 1), label: 'Z', title: 'Look at the front', positive: true },
-  { preset: 'back', axis: 'z', vector: new THREE.Vector3(0, 0, -1), label: '', title: 'Look at the back', positive: false },
+  { preset: 'rear', axis: 'z', vector: new THREE.Vector3(0, 0, -1), label: '', title: 'Look at the back', positive: false },
 ];
 
 const AXES = ['x', 'y', 'z'] as const;

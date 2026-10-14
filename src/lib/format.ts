@@ -53,3 +53,33 @@ export function shortName(name: string, max = 34): string {
   const ext = dot > 0 ? name.slice(dot) : '';
   return `${name.slice(0, max - ext.length - 1)}…${ext}`;
 }
+
+/**
+ * A volume from cubic millimetres, in the unit family the display uses:
+ * cubic inches for inches, cubic centimetres otherwise — the figure a filament
+ * spool is sold against — and cubic millimetres for very small parts.
+ */
+export function volume(mm3: number, unit: UnitSystem): string {
+  if (unit === 'in') return `${(mm3 / 16387.064).toFixed(2)} in³`;
+  if (mm3 < 1000) return `${mm3.toFixed(1)} mm³`;
+  const cm3 = mm3 / 1000;
+  return `${cm3 >= 1000 ? Math.round(cm3).toLocaleString('en-US') : cm3.toFixed(cm3 >= 100 ? 1 : 2)} cm³`;
+}
+
+/** An area from square millimetres, in the same unit family as `volume`. */
+export function area(mm2: number, unit: UnitSystem): string {
+  if (unit === 'in') return `${(mm2 / 645.16).toFixed(2)} in²`;
+  if (mm2 < 100) return `${mm2.toFixed(1)} mm²`;
+  const cm2 = mm2 / 100;
+  return `${cm2 >= 1000 ? Math.round(cm2).toLocaleString('en-US') : cm2.toFixed(cm2 >= 100 ? 1 : 2)} cm²`;
+}
+
+export function grams(g: number): string {
+  if (g >= 1000) return `${(g / 1000).toFixed(2)} kg`;
+  return `${g >= 100 ? Math.round(g) : g.toFixed(1)} g`;
+}
+
+/** An angle in degrees, to a tenth: finer than any printed part holds. */
+export function degrees(value: number): string {
+  return `${value.toFixed(1)}°`;
+}

@@ -1,9 +1,9 @@
 {
   "name": "caliper",
   "private": true,
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
-  "description": "Open a 3D model in the browser and measure it. Mesh, CAD and BIM formats, nothing uploaded.",
+  "description": "A 3D model viewer that works like your slicer: open 22 mesh, CAD and BIM file types in the browser, measure, orient, section and preview layers. Installable, offline, nothing uploaded.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,7 +17,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --import ./test/register.mjs --test \"test/*.test.ts\""
+    "test": "node --import ./test/register.mjs --test \"test/*.test.ts\"",
+    "coverage": "node --import ./test/register.mjs --test --experimental-test-coverage \"test/*.test.ts\"",
+    "contrast": "node scripts/contrast.mjs"
   },
   "dependencies": {
     "fflate": "^0.8.2",

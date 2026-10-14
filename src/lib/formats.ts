@@ -1,4 +1,4 @@
-import type { FormatSpec, Pipeline } from '@/types';
+import type { FormatSpec, Pipeline, SourceUnit } from '@/types';
 
 /**
  * Every format Caliper opens, grouped by the pipeline that turns it into
@@ -13,8 +13,8 @@ export const FORMATS: FormatSpec[] = [
   { ext: 'obj', label: 'Wavefront', pipeline: 'mesh', companions: ['mtl', 'png', 'jpg'] },
   { ext: 'ply', label: 'Polygon File Format', pipeline: 'mesh' },
   { ext: 'off', label: 'Object File Format', pipeline: 'mesh' },
-  { ext: 'gltf', label: 'glTF', pipeline: 'mesh', companions: ['bin', 'png', 'jpg', 'ktx2'] },
-  { ext: 'glb', label: 'glTF binary', pipeline: 'mesh' },
+  { ext: 'gltf', label: 'glTF', pipeline: 'mesh', companions: ['bin', 'png', 'jpg', 'ktx2'], unit: 'm' },
+  { ext: 'glb', label: 'glTF binary', pipeline: 'mesh', unit: 'm' },
   { ext: 'fbx', label: 'Filmbox', pipeline: 'mesh' },
   { ext: 'dae', label: 'Collada', pipeline: 'mesh' },
   { ext: '3ds', label: '3D Studio', pipeline: 'mesh' },
@@ -33,8 +33,8 @@ export const FORMATS: FormatSpec[] = [
   { ext: '3dm', label: 'Rhinoceros', pipeline: 'cad' },
 
   // --- building models ----------------------------------------------------
-  { ext: 'ifc', label: 'Industry Foundation Classes', pipeline: 'bim' },
-  { ext: 'bim', label: 'dotbim', pipeline: 'bim' },
+  { ext: 'ifc', label: 'Industry Foundation Classes', pipeline: 'bim', unit: 'm' },
+  { ext: 'bim', label: 'dotbim', pipeline: 'bim', unit: 'm' },
 ];
 
 const BY_EXT = new Map(FORMATS.map((f) => [f.ext, f]));
@@ -93,6 +93,17 @@ export function baseOf(filename: string): string {
 
 export function specFor(filename: string): FormatSpec | undefined {
   return BY_EXT.get(extOf(filename));
+}
+
+/**
+ * The unit a file's numbers are read in until a person says otherwise. glTF is
+ * metres by specification, web-ifc reports IFC geometry in metres, and dotbim
+ * files are authored in metres by convention. Everything else is read as
+ * millimetres, which is what a slicer assumes of an STL. The details panel
+ * offers the other units for the files that guess wrong.
+ */
+export function defaultUnitFor(filename: string): SourceUnit {
+  return specFor(filename)?.unit ?? 'mm';
 }
 
 export function isSupported(filename: string): boolean {

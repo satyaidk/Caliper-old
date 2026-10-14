@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: Typecheck and build
+    name: Typecheck, test and build
     runs-on: ubuntu-latest
 
     steps:
@@ -34,6 +34,10 @@ jobs:
       # keep in step with the build.
       - name: Unit tests
         run: npm test
+
+      # Every text colour against every surface it sits on, in both themes.
+      - name: Contrast
+        run: npm run contrast
 
       - name: Build
         run: npm run build

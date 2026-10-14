@@ -1,6 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { bytes, compact, count, dim, ms, shortName } from '../src/lib/format.ts';
+import { area, bytes, compact, count, degrees, dim, grams, ms, shortName, volume } from '../src/lib/format.ts';
 
 /* Everything in lib/ is a pure function, which makes it the cheapest code in
    the project to test and the code most likely to be quietly wrong — number
@@ -101,5 +101,39 @@ describe('shortName', () => {
     assert.ok(out.length <= 20, `"${out}" should be at most 20 characters`);
     assert.ok(out.endsWith('.step'), `"${out}" should keep its extension`);
     assert.ok(out.includes('…'), `"${out}" should show it was shortened`);
+  });
+});
+
+describe('volume and area', () => {
+  test('pick cm³ and cm² for printable sizes', () => {
+    assert.equal(volume(6000, 'mm'), '6.00 cm³');
+    assert.equal(area(2200, 'mm'), '22.00 cm²');
+  });
+
+  test('drop to mm for small parts', () => {
+    assert.equal(volume(512, 'mm'), '512.0 mm³');
+    assert.equal(area(64, 'cm'), '64.0 mm²');
+  });
+
+  test('switch to inch units when the display is in inches', () => {
+    assert.equal(volume(16387.064, 'in'), '1.00 in³');
+    assert.equal(area(645.16, 'in'), '1.00 in²');
+  });
+
+  test('group thousands on very large parts', () => {
+    assert.equal(volume(2_500_000_000, 'mm'), '2,500,000 cm³');
+  });
+});
+
+describe('grams and degrees', () => {
+  test('grams climb to kilograms', () => {
+    assert.equal(grams(7.44), '7.4 g');
+    assert.equal(grams(250.4), '250 g');
+    assert.equal(grams(1240), '1.24 kg');
+  });
+
+  test('degrees keep one decimal', () => {
+    assert.equal(degrees(90), '90.0°');
+    assert.equal(degrees(44.96), '45.0°');
   });
 });

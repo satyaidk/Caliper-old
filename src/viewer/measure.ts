@@ -136,6 +136,20 @@ export function circleThrough(
 }
 
 /**
+ * The angle at `vertex` between the arms out to `a` and `b`, in degrees — how
+ * a chamfer or a draft gets read when the file only kept the triangles. Null
+ * when either arm has no length, because then there is no direction to measure.
+ */
+export function angleAt(a: THREE.Vector3, vertex: THREE.Vector3, b: THREE.Vector3): number | null {
+  const u = a.clone().sub(vertex);
+  const v = b.clone().sub(vertex);
+  const lengths = u.length() * v.length();
+  if (lengths < 1e-12) return null;
+  const cosine = THREE.MathUtils.clamp(u.dot(v) / lengths, -1, 1);
+  return THREE.MathUtils.radToDeg(Math.acos(cosine));
+}
+
+/**
  * A unit vector across the measured span, used to lay the witness ticks flat
  * against the viewer. Falls back to world up for a span pointing at the camera.
  */

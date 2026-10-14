@@ -1,0 +1,21 @@
+name: Feature request
+description: Something Caliper should do.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What are you trying to do, and what gets in the way?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+      description: How you imagine it working. If Bambu Studio or another tool does it, say how.
+  - type: textarea
+    id: files
+    attributes:
+      label: Formats and files
+      description: Which formats this matters for, and an example file if you can share one.

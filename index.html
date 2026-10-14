@@ -2,17 +2,18 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <!-- No maximum-scale: pinch-zoom is how a lot of people read a screen, and
-         locking it out to stop an input focus jump is not a trade worth making. -->
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark light" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101114" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#e6e7ea" />
+    <meta name="theme-color" content="#262e30" />
 
-    <!-- Stamp the theme before first paint so a light-mode visitor never sees a
-         dark flash. Must agree with initialTheme() in store/useViewer.ts. -->
     <script>
       (function () {
+        // Links from before the app moved to /app/ carried the model on the
+        // root URL. Send them on, query string intact.
+        if (/[?&](model|sample)=?/.test(location.search)) {
+          location.replace('/app/' + location.search + location.hash);
+          return;
+        }
         try {
           var saved = localStorage.getItem('caliper.theme');
           document.documentElement.dataset.theme =
@@ -27,46 +28,199 @@
       })();
     </script>
 
-    <title>Caliper — open and measure 3D models in the browser</title>
+    <title>Caliper — a 3D model viewer that works like your slicer</title>
     <meta
       name="description"
-      content="Open STEP, STL, IFC, glTF and 18 more formats in the browser and read their size. Measure distances and diameters, with clicks that snap to corners and edges. Nothing is uploaded and there is nothing to install."
+      content="Open STEP, STL, 3MF, IFC, glTF and 17 more formats in the browser. Measure, orient, cut sections and preview layers with Bambu Studio's tools and keys. Installable, works offline, nothing uploaded."
     />
     <link rel="canonical" href="https://caliper.app/" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Caliper — open and measure 3D models in the browser" />
+    <meta property="og:title" content="Caliper — a 3D model viewer that works like your slicer" />
     <meta
       property="og:description"
-      content="Mesh, CAD and BIM files open the same way. Read width, height and depth, and measure distances and diameters. Runs entirely on your device."
+      content="Open 22 mesh, CAD and BIM file types in the browser. Measure, orient, cut sections and preview layers. Runs entirely on your device."
     />
-    <meta property="og:image" content="/og.png" />
+    <meta property="og:image" content="https://caliper.app/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Caliper — open and measure 3D models in the browser" />
-    <meta
-      name="twitter:description"
-      content="Mesh, CAD and BIM files open the same way. Read the size, measure distances and diameters."
-    />
-    <meta name="twitter:image" content="/og.png" />
+    <meta name="twitter:image" content="https://caliper.app/og.png" />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..700&display=swap" rel="stylesheet" />
   </head>
-  <body>
-    <div id="root"></div>
-    <noscript>
-      Caliper renders models with WebGL and needs JavaScript enabled.
-    </noscript>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="site">
+    <a class="skip" href="#main">Skip to the content</a>
+
+    <header class="nav">
+      <a class="nav-brand" href="/" aria-label="Caliper home">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4.6 4.5v15M19.4 4.5v15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M4.6 12h14.8" stroke="#00ae42" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M8.2 9.2 5.2 12l3 2.8M15.8 9.2l3 2.8-3 2.8" stroke="#00ae42" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span>Caliper</span>
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#tools">Tools</a>
+        <a href="#preview">Preview</a>
+        <a href="#formats">Formats</a>
+        <a href="#install">App</a>
+        <a href="https://github.com/satyaidk/Caliper">Source</a>
+      </nav>
+      <div class="nav-end">
+        <button type="button" class="nav-icon" id="theme-toggle" aria-label="Switch theme">
+          <svg class="if-dark" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="10" cy="10" r="3.4" /><path d="M10 1.8V4M10 16v2.2M3.2 3.2l1.6 1.6M15.2 15.2l1.6 1.6M1.8 10H4M16 10h2.2M3.2 16.8l1.6-1.6M15.2 4.8l1.6-1.6" /></svg>
+          <svg class="if-light" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M16.4 12.4A7 7 0 0 1 7.6 3.6a7 7 0 1 0 8.8 8.8z" /></svg>
+        </button>
+        <a class="nav-cta" href="/app/">Open the viewer</a>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- The hero is the product: the same window, the same engine, a real part. -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-side">
+          <h1 id="hero-title">A 3D model viewer that works like your slicer</h1>
+          <p class="hero-lede">
+            Open STEP, STL, 3MF, IFC and <span data-count-rest>18</span> more file types in the browser. Measure them,
+            stand them on a face, cut them open and step through their layers, with Bambu Studio’s tools and keys.
+            The file never leaves your device.
+          </p>
+          <div class="hero-actions">
+            <a class="btn-site" data-variant="primary" href="/app/">Open the viewer</a>
+            <a class="btn-site" data-variant="ghost" href="/app/?sample">Try it on a sample part</a>
+          </div>
+
+          <div class="hero-panel" aria-label="The sample part">
+            <div class="hero-panel-head">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v14h14" /><path d="M6.6 13.4 13.4 6.6M10.2 6.6h3.2v3.2" /></svg>
+              Size of the gear in the viewer
+            </div>
+            <dl class="hero-dims">
+              <div data-axis="x"><dt>X</dt><dd>Width</dd><dd class="num" data-dim="x">–</dd></div>
+              <div data-axis="y"><dt>Y</dt><dd>Height</dd><dd class="num" data-dim="y">–</dd></div>
+              <div data-axis="z"><dt>Z</dt><dd>Depth</dd><dd class="num" data-dim="z">–</dd></div>
+            </dl>
+            <p class="hero-note">
+              An 18-tooth gear generated on this page. The orange dimensions are Caliper measuring it: a circle
+              fitted through three tooth tips, and the thickness at one of them.
+            </p>
+          </div>
+        </div>
+
+        <div class="hero-stage" id="hero-stage">
+          <canvas id="hero-canvas" aria-label="A gear on a build plate, measured"></canvas>
+          <div class="hero-tags" id="hero-tags" aria-hidden="true"></div>
+          <div class="hero-toolbar" role="toolbar" aria-label="Try the view tools">
+            <button type="button" data-mode="shaded" aria-pressed="true">Shaded</button>
+            <button type="button" data-mode="edges" aria-pressed="false">Edges</button>
+            <button type="button" data-mode="wireframe" aria-pressed="false">Wireframe</button>
+            <span class="hero-sep"></span>
+            <button type="button" data-toggle="section" aria-pressed="false">Section</button>
+            <button type="button" data-toggle="ortho" aria-pressed="false">Orthographic</button>
+          </div>
+          <p class="hero-hint">Drag to turn the part.</p>
+          <img class="hero-fallback" src="/screens/prepare.png" alt="Caliper showing a measured gear on a build plate" hidden />
+        </div>
+      </section>
+
+      <section class="band" id="tools" aria-labelledby="tools-title">
+        <div class="band-head">
+          <h2 id="tools-title">The slicer’s tools, for any file</h2>
+          <p>
+            The toolbar runs along the top of the canvas the way Bambu Studio’s does, and the keys are the same
+            ones. Each tool works on every format Caliper opens, from a phone scan to an IFC building.
+          </p>
+        </div>
+        <ul class="tools" id="tool-list"></ul>
+      </section>
+
+      <section class="band band-split" id="preview" aria-labelledby="preview-title">
+        <figure class="shot">
+          <img src="/screens/preview.png" alt="Caliper's Preview tab: a part cut at a layer, overhangs in red, and a printability check-up in the sidebar" loading="lazy" width="1280" height="800" />
+        </figure>
+        <div class="band-head">
+          <h2 id="preview-title">Preview before you slice</h2>
+          <p>
+            The Preview tab cuts the part at any layer, from the plate up, at the layer height you print with.
+            Faces past the overhang limit turn red, and the sidebar checks the surface:
+          </p>
+          <ul class="checks">
+            <li><b>Closed or open.</b> Every edge used by only one triangle is counted, so a hole in a scan shows up before the slicer guesses across it.</li>
+            <li><b>Volume and weight.</b> Exact for a closed surface, with the weight in solid PLA beside it.</li>
+            <li><b>Overhang area.</b> How much of the surface would print in mid-air at the limit you set.</li>
+            <li><b>Fits the plate.</b> Choose a printer and the plate is drawn at its real size, with the part at its real size on top.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="band" id="formats" aria-labelledby="formats-title">
+        <div class="band-head">
+          <h2 id="formats-title"><span data-count>22</span> file types, three ways in</h2>
+          <p>
+            Mesh files already contain triangles. CAD files hold exact surfaces that a WebAssembly geometry kernel
+            turns into triangles on your device. BIM files carry building elements, each one listed as a part.
+          </p>
+        </div>
+        <div class="site-formats" id="format-list"></div>
+      </section>
+
+      <section class="band band-split" id="install" aria-labelledby="install-title">
+        <div class="band-head">
+          <h2 id="install-title">Install it, then double-click a model</h2>
+          <p>
+            Caliper is a web app you can install. Installed, it opens in its own window with the top bar as its
+            title bar, it keeps working without a connection, and your operating system offers it for STL, STEP,
+            3MF and the other model files.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="btn-site" data-variant="primary" id="install-button" hidden>Install Caliper</button>
+            <a class="btn-site" data-variant="ghost" href="/app/">Use it in the browser</a>
+          </div>
+          <p class="install-note" id="install-note">
+            In Chrome or Edge, use the install icon at the end of the address bar. On an iPhone or iPad, open the
+            Share menu in Safari and choose Add to Home Screen.
+          </p>
+        </div>
+        <ul class="facts">
+          <li>
+            <b>Offline after the first visit</b>
+            <span>The app and every geometry kernel you have used are kept on the device.</span>
+          </li>
+          <li>
+            <b>Opens files from your desktop</b>
+            <span>Installed in Chrome or Edge, model files can be opened with Caliper from the file manager.</span>
+          </li>
+          <li>
+            <b>Nothing is uploaded</b>
+            <span>Files are read in the browser tab. There is no server to send them to and no account to make.</span>
+          </li>
+          <li>
+            <b>Works on a phone</b>
+            <span>The sidebar becomes a sheet and the toolbars scroll, so a part sent in a chat can be measured there.</span>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>
+        Caliper is open source under the MIT licence.
+        <a href="https://github.com/satyaidk/Caliper">Read the source on GitHub</a>.
+      </p>
+      <p>
+        Its interface follows Bambu Studio. Caliper is an independent project and is not affiliated with or endorsed
+        by Bambu Lab.
+      </p>
+    </footer>
+
+    <script type="module" src="/src/site/main.ts"></script>
   </body>
 </html>
